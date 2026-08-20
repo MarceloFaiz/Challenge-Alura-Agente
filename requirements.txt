@@ -1,0 +1,12 @@
+langchain
+langchain-google-genai
+langchain-community
+langchain-huggingface
+sentence-transformers
+chromadb
+fastapi
+uvicorn
+streamlit
+python-dotenv
+unstructured[all-docs]
+flashrank
