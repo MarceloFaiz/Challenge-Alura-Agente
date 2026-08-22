@@ -1,20 +1,21 @@
 import os
 
-from langchain_community.vectorstores import Chroma
-#from langchain-chroma import Chroma
+# from langchain_community.vectorstores import Chroma
+
+from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-from src.config import CHROMA_DIR, DOCS_DIR
-from src.document_processor import load_and_process_documents
+from src.backend.config import CHROMA_DIR, DOCS_DIR
+from src.backend.document_processor import load_and_process_documents
 
 COLLECTION_NAME = "company_docs"
 
 
 class VectorStoreManager:
     def __init__(self):
-        print(f"Diretório dos documentos: " f"{os.path.abspath(DOCS_DIR)}")
+        print(f"Diretório dos documentos: {os.path.abspath(DOCS_DIR)}")
 
-        print(f"Diretório do Chroma: " f"{os.path.abspath(CHROMA_DIR)}")
+        print(f"Diretório do Chroma: {os.path.abspath(CHROMA_DIR)}")
 
         self.embeddings = HuggingFaceEmbeddings()
         # model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -22,7 +23,7 @@ class VectorStoreManager:
 
         self.vector_store = self._create_vector_store()
 
-        print("Chunks atualmente no Chroma: " f"{self._get_count()}")
+        print(f"Chunks atualmente no Chroma: {self._get_count()}")
 
     def _create_vector_store(self):
         """Cria ou abre a coleção persistente do Chroma."""
@@ -45,7 +46,7 @@ class VectorStoreManager:
             self.vector_store.delete_collection()
 
         except Exception as exc:
-            print("Aviso ao remover coleção existente: " f"{exc}")
+            print(f"Aviso ao remover coleção existente: {exc}")
 
     def sync_documents(self):
         """
@@ -54,7 +55,7 @@ class VectorStoreManager:
 
         print("\n=== SINCRONIZAÇÃO ===")
 
-        print(f"Diretório: " f"{os.path.abspath(DOCS_DIR)}")
+        print(f"Diretório: {os.path.abspath(DOCS_DIR)}")
 
         if not os.path.exists(DOCS_DIR):
             return {
@@ -67,7 +68,7 @@ class VectorStoreManager:
         if not chunks:
             return {
                 "status": "error",
-                "message": ("Nenhum chunk foi gerado " "a partir dos documentos."),
+                "message": ("Nenhum chunk foi gerado a partir dos documentos."),
             }
 
         print(f"Chunks a adicionar: {len(chunks)}")
@@ -82,7 +83,7 @@ class VectorStoreManager:
 
         count = self._get_count()
 
-        print("Chunks no Chroma após sincronização: " f"{count}")
+        print(f"Chunks no Chroma após sincronização: {count}")
 
         return {
             "status": "success",
@@ -102,11 +103,10 @@ class VectorStoreManager:
         print(f"Resultados encontrados: {len(docs)}")
 
         for i, doc in enumerate(docs):
-
             print(f"\n--- Resultado {i + 1} ---")
 
-            print(f"Arquivo: " f"{doc.metadata.get('filename', 'Desconhecido')}")
+            print(f"Arquivo: {doc.metadata.get('filename', 'Desconhecido')}")
 
-            print(f"Conteúdo: " f"{doc.page_content[:500]}")
+            print(f"Conteúdo: {doc.page_content[:500]}")
 
         return docs

@@ -3,11 +3,10 @@ from langchain_core.prompts import ChatPromptTemplate
 
 # from langchain_community.document_compressors import FlashrankRerank
 
-from src.config import GOOGLE_API_KEY
+from src.backend.config import GOOGLE_API_KEY
 
 
 class CorporateAgent:
-
     FALLBACK_MESSAGE = (
         "Desculpe, não encontrei informações sobre isso "
         "nos documentos atuais da empresa."
@@ -82,7 +81,7 @@ class CorporateAgent:
                 "Desconhecido",
             )
 
-            context_parts.append(f"[FONTE: {filename}]\n" f"{document.page_content}")
+            context_parts.append(f"[FONTE: {filename}]\n{document.page_content}")
 
         return "\n\n".join(context_parts)
 

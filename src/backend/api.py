@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from src.rag_agent import CorporateAgent
-from src.vector_store import VectorStoreManager
+from src.backend.rag_agent import CorporateAgent
+from src.backend.vector_store import VectorStoreManager
 
 app = FastAPI(title="Corporate RAG Agent API")
 
@@ -48,7 +48,7 @@ async def sync_documents_endpoint():
 
 @app.post("/debug/search")
 async def debug_search(request: QueryRequest):
-    
+
     try:
         docs = vector_manager.search(request.question, k=5)
 
