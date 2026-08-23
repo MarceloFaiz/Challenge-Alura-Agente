@@ -1,7 +1,6 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
-
-# from langchain_community.document_compressors import FlashrankRerank
+from langchain_community.document_compressors import FlashrankRerank
 
 from src.backend.config import GOOGLE_API_KEY
 
@@ -21,8 +20,8 @@ class CorporateAgent:
             temperature=0.0,
         )
 
-        # Reranker configurado para retornar os 3 melhores documentos
-        # self.compressor = FlashrankRerank(top_n=3)
+        # Reranker configurado para retornar os 5 melhores documentos
+        self.compressor = FlashrankRerank(top_n=5)
 
         self.prompt = self._build_prompt()
 
@@ -67,10 +66,20 @@ class CorporateAgent:
         )
 
     def _retrieve_documents(self, question):
-        return self.vector_manager.search(
+        documents = self.vector_manager.search(
             question,
-            k=5,
+            k=10,
         )
+
+        if not documents:
+            return []
+
+        reranked_documents = self.compressor.compress_documents(
+            documents,
+            question,
+        )
+
+        return reranked_documents
 
     def _build_context(self, documents):
         context_parts = []
