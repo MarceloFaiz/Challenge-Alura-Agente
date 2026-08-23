@@ -1,5 +1,7 @@
 # Assistente de Conhecimento Corporativo com RAG
 
+![Screenshot do site](./assets/images/site_screenshot.png)
+
 Projeto desenvolvido como parte do **Challenge Alura + Oracle ONE**, com o objetivo de criar um assistente de Inteligência Artificial capaz de responder perguntas sobre documentos corporativos utilizando **RAG (Retrieval-Augmented Generation)**.
 
 A aplicação processa uma base de documentos, transforma seu conteúdo em embeddings, armazena as representações em um banco vetorial e utiliza recuperação semântica e reranqueamento para selecionar as informações mais relevantes antes de gerar uma resposta com o **Google Gemini**.
