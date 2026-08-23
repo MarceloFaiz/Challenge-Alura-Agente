@@ -1,7 +1,6 @@
 import os
 
-# from langchain_community.vectorstores import Chroma
-
+from time import perf_counter
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -17,9 +16,11 @@ class VectorStoreManager:
 
         print(f"Diretório do Chroma: {os.path.abspath(CHROMA_DIR)}")
 
-        self.embeddings = HuggingFaceEmbeddings()
-        # model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-        # )
+        self.embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": True},
+        )
 
         self.vector_store = self._create_vector_store()
 
@@ -79,7 +80,15 @@ class VectorStoreManager:
         # Cria uma nova coleção
         self.vector_store = self._create_vector_store()
 
+        print("Gerando embeddings e armazenando chunks no Chroma...")
+
+        embedding_start = perf_counter()
+
         self.vector_store.add_documents(chunks)
+
+        embedding_time = perf_counter() - embedding_start
+
+        print(f"[PERF] Embeddings + gravação no Chroma: {embedding_time:.2f}s")
 
         count = self._get_count()
 
@@ -94,19 +103,27 @@ class VectorStoreManager:
     def search(self, question, k=5):
         """Busca documentos semelhantes à pergunta."""
 
+        search_start = perf_counter()
+
         docs = self.vector_store.similarity_search(
             question,
             k=k,
         )
 
+        search_time = perf_counter() - search_start
+
         print(f"\nBusca: {question}")
         print(f"Resultados encontrados: {len(docs)}")
+        print(f"[PERF] Embedding da pergunta + busca no Chroma: {search_time:.2f}s")
 
-        for i, doc in enumerate(docs):
-            print(f"\n--- Resultado {i + 1} ---")
+        # for i, doc in enumerate(docs):
+        # print(f"\n--- Resultado {i + 1} ---")
+        # print(f"Arquivo: {doc.metadata.get('filename', 'Desconhecido')}")
+        # print(f"Conteúdo: {doc.page_content[:500]}")
 
-            print(f"Arquivo: {doc.metadata.get('filename', 'Desconhecido')}")
-
-            print(f"Conteúdo: {doc.page_content[:500]}")
+        print(
+            "Arquivos recuperados: "
+            + ", ".join(doc.metadata.get("filename", "Desconhecido") for doc in docs)
+        )
 
         return docs

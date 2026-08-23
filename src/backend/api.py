@@ -15,7 +15,7 @@ class QueryRequest(BaseModel):
 
 
 @app.get("/health")
-async def health():
+def health():
     return {
         "status": "ok",
         "chunks": vector_manager.vector_store._collection.count(),
@@ -23,7 +23,7 @@ async def health():
 
 
 @app.post("/chat")
-async def chat_endpoint(request: QueryRequest):
+def chat_endpoint(request: QueryRequest):
 
     try:
         answer = agent.ask(request.question)
@@ -35,7 +35,7 @@ async def chat_endpoint(request: QueryRequest):
 
 
 @app.post("/sync")
-async def sync_documents_endpoint():
+def sync_documents_endpoint():
 
     try:
         result = vector_manager.sync_documents()
@@ -47,7 +47,7 @@ async def sync_documents_endpoint():
 
 
 @app.post("/debug/search")
-async def debug_search(request: QueryRequest):
+def debug_search(request: QueryRequest):
 
     try:
         docs = vector_manager.search(request.question, k=5)
