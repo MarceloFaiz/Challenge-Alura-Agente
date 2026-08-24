@@ -2,9 +2,17 @@
 
 Projeto desenvolvido como parte do **Challenge Alura + Oracle ONE**.
 
+<p align="center">
+  <img
+    src="./assets/images/screenshot.png"
+    width="800"
+    alt="Screenshot da aplicação"
+  >
+</p>
+
 ---
 
-## Visão geral do projeto
+# Visão geral do projeto
 
 Em empresas, informações importantes costumam estar distribuídas em documentos como manuais, guias técnicos, procedimentos internos e materiais de onboarding.
 
@@ -14,9 +22,7 @@ Encontrar uma informação específica pode exigir saber:
 - quais documentos estão atualizados;
 - quais termos foram utilizados na documentação.
 
-Este projeto busca simplificar esse processo por meio de um assistente conversacional.
-
-Em vez de pesquisar manualmente nos arquivos, o usuário pode fazer uma pergunta em linguagem natural.
+Este projeto busca simplificar esse processo por meio de um assistente conversacional onde alguém pode em vez de pesquisar manualmente nos arquivos, fazer uma pergunta em linguagem natural.
 
 O sistema procura os trechos semanticamente mais relacionados à pergunta, seleciona os resultados mais relevantes e utiliza esses trechos como contexto para o modelo de linguagem.
 
@@ -26,15 +32,16 @@ O agente foi projetado para responder **somente com base nos documentos disponí
 
 # Principais funcionalidades
 
-- Interface gráfica estilo chat-bot para interação com agente inteligente;
-- Permite múltiplas conversas (permanência de histórico, por enquanto, é por sessão);
+- Agente inteligente que faz uso de IAs generativas e Retrieval-Augmented Generation (RAG) para responder perguntas;
+- Interface gráfica estilo chat-bot para interação com o agente;
 - Consulta uma base de documentos fixa, sem usar conhecimento externo ou alucinar informações;
+- Permite múltiplas conversas (permanência de histórico, por enquanto, é por sessão);
 - Geração de respostas utilizando Google Gemini;
 - Estrutura desenvolvida para execução em ambientes de nuvem (para o projeto, foi usado o OCI).
 
 ---
 
-# Tecnologias / arquitetura
+# Tecnologias usadas
 
 | Tecnologia                     | Utilização                        |
 | ------------------------------ | --------------------------------- |
@@ -50,26 +57,50 @@ O agente foi projetado para responder **somente com base nos documentos disponí
 | Docker                         | Containerização                   |
 | Docker Compose                 | Orquestração local dos containers |
 
-
 ---
 
-# Base documental
+# Arquitetura
 
-Os documentos utilizados pelo projeto ficam em:
+A aplicação é dividida em duas partes principais:
 
-```text
-data/docs/
+## Backend — FastAPI
+
+Responsável por:
+- processamento dos documentos;
+- geração dos embeddings;
+- armazenamento e consulta no ChromaDB;
+- recuperação semântica;
+- reranqueamento;
+- comunicação com o modelo Gemini;
+- construção das respostas;
+- disponibilização dos endpoints da API.
+
+## Frontend — Streamlit
+
+Responsável por:
+- interface de chat;
+- envio das perguntas para a API;
+- exibição das respostas;
+- gerenciamento das conversas durante a sessão;
+- acionamento da sincronização dos documentos.
+
+## Fluxo simplificado
+
 ```
-
-O repositório, atualmente, inclui documentos template fornecidos pela Alura, com documentos sobre:
-- arquitetura de microsserviços;
-- guia backend;
-- guia frontend;
-- entre outros
-
-O uso da biblioteca unstructured permite o processamento de diferentes tipos de arquivos, como `.csv` e `.docx`, por exemplo.
-
-O programa, por enquanto, está configurado de modo a receber esses documentos e responder como um ajudante em uma empresa, mas alterar seu comportamento para diferentes propósitos é relativamente trivial de fazer, com a maior modificação sendo no prompt inicial. Então é possível converter esse agente pra um ajudante em game dev, estudos, entre outros.
+flowchart LR
+    A[Usuário] --> B[Streamlit]
+    B --> C[FastAPI]
+    C --> D[Busca vetorial]
+    D --> E[ChromaDB]
+    E --> F[Top 10 chunks]
+    F --> G[FlashRank]
+    G --> H[Top 5 chunks]
+    H --> I[Prompt + Contexto]
+    I --> J[Google Gemini]
+    J --> C
+    C --> B
+    B --> A
+```
 
 ---
 
@@ -243,6 +274,22 @@ Cada conversa mantém separadamente suas mensagens e recebe automaticamente um t
 
 ---
 
+# Base documental
+
+Os documentos utilizados pelo projeto ficam em `data/docs`
+
+O repositório, atualmente, inclui documentos template fornecidos pela Alura, com documentos sobre:
+- arquitetura de microsserviços;
+- guia backend;
+- guia frontend;
+- entre outros
+
+O uso da biblioteca unstructured permite o processamento de diferentes tipos de arquivos, como `.csv` e `.docx`, por exemplo.
+
+O programa, por enquanto, está configurado de modo a receber esses documentos e responder como um ajudante em uma empresa, mas alterar seu comportamento para diferentes propósitos é relativamente trivial de fazer, com a maior modificação sendo no prompt inicial. Então é possível converter esse agente pra um ajudante em game dev, estudos, entre outros.
+
+---
+
 # Oracle Cloud Infrastructure
 
 A OCI foi escolhida como a infraestrutura usada para deploy da aplicação.
@@ -266,6 +313,12 @@ Docker compose (inicia as duas images)
      ↓
 Aplicação Web
 ```
+
+Para esse projeto, eu escolhi usar uma VM baseada na shape `VM.Standard.E2.2`, da AMD por conveniência. As shapes Always free estava todas indisponíveis pra criação considerando a região da minha conta (Brazil East (São Paulo)) e eu ainda estou sob período de free trial, podendo usar 300 USD como crédito por 30 dias. Dito isso, se estivessem disponíveis, eu teria ido pelo `VM.Standard.A1.Flex` que se difere da que eu usei por usar arquitetura ARM ao invés de x86_64.
+
+A máquina foi configurada com:
+- 2 OCPUs;
+- 16 GBs de memória.
 
 ---
 
@@ -294,3 +347,4 @@ Analisando o projeto, eu acredito que essas sejam boas opções de extenção/ap
 # Licensa
 
 Este projeto está disponibilizado sob a licença MIT.
+
