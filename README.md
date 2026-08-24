@@ -4,7 +4,7 @@ Projeto desenvolvido como parte do **Challenge Alura + Oracle ONE**.
 
 <p align="center">
   <img
-    src="./assets/images/screenshot.png"
+    src="./assets/images/site_screenshot.png"
     width="800"
     alt="Screenshot da aplicação"
   >
