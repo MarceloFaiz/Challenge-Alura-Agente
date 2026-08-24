@@ -10,6 +10,8 @@ Projeto desenvolvido como parte do **Challenge Alura + Oracle ONE**.
   >
 </p>
 
+Link para vídeo demonstrando o uso da aplicação: https://youtu.be/Xcf1FG8r7KM
+
 ---
 
 # Visão geral do projeto
